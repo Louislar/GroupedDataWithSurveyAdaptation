@@ -9,8 +9,7 @@ import pandas as pd
 from collections import Counter 
 import matplotlib.pyplot as plt 
 
-# main_directory = './simulation_with_random_switch/thesis_with_or_without_mat_dis_info/'
-main_directory = './multiple_distribution_simulation_data/gamma/no_distribution_assumption/'
+main_directory = './simul_data/'
 
 
 # (QP估計結果與simulation資訊的比較)
