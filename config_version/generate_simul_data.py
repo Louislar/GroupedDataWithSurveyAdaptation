@@ -5,13 +5,15 @@ Cohort is choosen randomly(uniformly) from population's samples
 
 import pandas as pd 
 import numpy as np
+import scipy.stats as st 
+from tqdm import tqdm
 from config import Config_simul
 from common_module_pkg.gamma_generater import fill_questionnaire
 
 # 產生資料
 # 1. 使用多個gamma作為母體隨機產生不同數量的數值 (樣本)
 # 2. 讓每個數值填寫固定版本問卷
-# 3. 根據threshold和樣本填問卷錯誤的機率，改變問卷填答結果
+# 3. 根據threshold和樣本填問卷錯誤的機率，改變問卷填答結果 (Not use in the article)
 
 def multi_origin_samples_generate(multiple_distribution_list, num_of_sample_points_list):
     """
@@ -62,6 +64,64 @@ def set_ID(sample_df_list):
         sample_df_list[i] = sample_df_list[i].reset_index().rename(columns={'index': 'id'})
         sample_df_list[i].loc[:, 'id'] = sample_df_list[i].loc[:, 'id'] + id_count
         id_count += len(sample_df_list[i]['id'])
+
+    return sample_df_list
+
+def multi_origin_samples_random_change_choice(sample_df_list, bias_bound_list, bias_pdf_list, threshold_list):
+    """
+    Give some probability that survey responses which is close to threshold change their value. 
+    (將填好問卷的多個母體樣本，根據設定好的機率，在threshold附近隨機改動問卷的填答)
+
+    Input: 
+    :sample_df_list: DataFrame includes sample and survey responses(in the 'q_result' column)
+    :bias_bound_list: Range that will possibly occurs a bias 
+    :bias_pdf_list: Probability of a bias occurs
+    :threshold_list: A threshold of the grouped data type survey
+
+    Output: 
+    :sample_df_list: DataFrames that has been added some bias in the survey response
+    """
+    def random_switch(datta_val, datta_q_result, pdf, threshold): 
+        """
+        Use the given pdf to decide whether the response is changing or not
+        (單筆資料依照輸入的機率公式、threshold，決定選項要+1還是-1) 
+
+        Input: 
+        :datta_val: An real value of a sample(真實連續數值)
+        :datta_q_result: The survey response according to the real value(連續數值對應的填答結果)
+        """
+        # print(datta_val)
+        # print(threshold)
+        change_probability = pdf(datta_val) 
+        is_change = st.bernoulli(change_probability).rvs(size=1)[0] == 1 
+        if is_change: 
+            if datta_val-threshold < 0: 
+                datta_q_result += 1
+            elif datta_val-threshold > 0:
+                datta_q_result -= 1
+        return datta_q_result 
+
+    for i in tqdm(range(len(sample_df_list))): 
+        # 每一個threshold有ub, lb，且都會做一次random switch 
+        for j in tqdm(range(len(bias_bound_list[i]))): 
+            in_bound_criterion = (sample_df_list[i]['sample'] >= bias_bound_list[i][j][0]) & (sample_df_list[i]['sample'] <= bias_bound_list[i][j][1])
+            sample_df_list[i].loc[in_bound_criterion,'new_q_result'] = \
+                sample_df_list[i].loc[in_bound_criterion, :].apply(lambda x: random_switch(
+                    x['sample'], 
+                    x['q_result'], 
+                    bias_pdf_list[i][j], 
+                    threshold_list[i][j]
+                    ), axis=1)
+            # print('number of potential change sample points: ', in_bound_criterion.sum())
+            # break
+            pass
+        # break
+    
+        # 合併
+        sample_df_list[i].loc[sample_df_list[i]['new_q_result'].isna(), 'final_q_result'] = \
+            sample_df_list[i].loc[sample_df_list[i]['new_q_result'].isna(), 'q_result']
+        sample_df_list[i].loc[sample_df_list[i]['new_q_result'].notna(),'final_q_result'] = \
+           sample_df_list[i].loc [sample_df_list[i]['new_q_result'].notna(), 'new_q_result']
 
     return sample_df_list
 
@@ -189,7 +249,7 @@ if __name__ == "__main__":
     simulationConfig = Config_simul()
     sample_point_df_list = multi_origin_samples_generate(simulationConfig.distribution_list, simulationConfig.num_of_sample_points_list)
     sample_point_df_list = multi_origin_samples_fill_questionnaire(sample_point_df_list, simulationConfig.version_of_questionnaire_list)
-    # sample_point_df_list = multi_origin_samples_random_change_choice(sample_point_df_list, threshold_bias_bound_list_list, threshold_bias_pdf_list_list, threshold_list)
+    sample_point_df_list = multi_origin_samples_random_change_choice(sample_point_df_list, simulationConfig.threshold_bias_bound_list_list, simulationConfig.threshold_bias_pdf_list_list, simulationConfig.threshold_list)
     
     # 設定ID (從0開始一直+1上去)
     sample_point_df_list = set_ID(sample_point_df_list)

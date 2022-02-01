@@ -12,23 +12,12 @@ class Config_simul:
         self.main_directory = './simul_data/'
         # frozen distribution (scipy distribution given parameters)
         self.distribution_list = [st.gamma(a=1, scale=3), st.gamma(a=1, scale=2.8), st.gamma(a=1, scale=2.7)]  
-        # self.threshold_bias_bound_list_list = [
-        #     [(0.7, 1.3), (1.7, 2.3), (2.3, 3.5)], 
-        #     [(0.7, 1.3), (2.2, 2.8), (4.2, 4.8), (5.5, 7)], 
-        #     [(0.7, 1.3), (2.2, 2.8), (4.2, 4.8), (5.5, 7)]
-        # ]   # bias發生的範圍 (upper bound, lower bound)
-        # self.threshold_bias_pdf_list_list = [
-        #     [lambda x: 0, lambda x: 0, lambda x: 0], 
-        #     [lambda x: 0, lambda x: 0, lambda x: 0, lambda x: 0], 
-        #     [lambda x: 0, lambda x: 0, lambda x: 0, lambda x: 0]
-        # ]
         self.threshold_list = [
             [1, 2, 3], 
             [1, 2.5, 4.5, 6.5], 
             [1, 2.5, 4.5, 6.5]
         ]
         self.num_of_sample_points_list = [57000, 38000, 35000]
-        # self.version_of_questionnaire_list = [gamma_generater.questionnaire_1997, gamma_generater.questionnaire_1998, gamma_generater.questionnaire_1998]
         self.version_of_questionnaire_list = [
             [
                 lambda a: a<1, 
@@ -76,4 +65,17 @@ class Config_simul:
             # Cohort probability vector in 1999 MJ dataset (美兆真實資料的99年(起始年)重複健檢的人口比例)
             np.array([0.441177793, 0.240278714, 0.156664419, 0.080557429, 0.081321645]) 
         ]
-        pass
+
+        # ======= ======= ======= ======= ======= ======= =======
+        # These parameter will use in data generation, but won't influence the generation result. 
+        # Also these parameters is the future work in the article 
+        self.threshold_bias_bound_list_list = [
+            [(0.7, 1.3), (1.7, 2.3), (2.3, 3.5)], 
+            [(0.7, 1.3), (2.2, 2.8), (4.2, 4.8), (5.5, 7)], 
+            [(0.7, 1.3), (2.2, 2.8), (4.2, 4.8), (5.5, 7)]
+        ]   # bias發生的範圍 (upper bound, lower bound)
+        self.threshold_bias_pdf_list_list = [
+            [lambda x: 0, lambda x: 0, lambda x: 0], 
+            [lambda x: 0, lambda x: 0, lambda x: 0, lambda x: 0], 
+            [lambda x: 0, lambda x: 0, lambda x: 0, lambda x: 0]
+        ]
