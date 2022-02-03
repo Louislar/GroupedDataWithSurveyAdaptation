@@ -9,6 +9,8 @@ from common_module_pkg import gamma_generater   # 這邊可以拿到threshold和
 
 class Config_simul: 
     def __init__(self) -> None:
+        # Set random seed
+        np.random.seed(0)
         self.main_directory = './simul_data/'
         # frozen distribution (scipy distribution given parameters)
         self.distribution_list = [st.gamma(a=1, scale=3), st.gamma(a=1, scale=2.8), st.gamma(a=1, scale=2.7)]  
@@ -67,8 +69,10 @@ class Config_simul:
         ]
 
         # ======= ======= ======= ======= ======= ======= =======
+        # Do not change these parameters. 
         # These parameter will use in data generation, but won't influence the generation result. 
-        # Also these parameters is the future work in the article 
+        # Because probability of bias appearing at each bound is set to 0. 
+        # Also the research on these parameters is the future work in the article 
         self.threshold_bias_bound_list_list = [
             [(0.7, 1.3), (1.7, 2.3), (2.3, 3.5)], 
             [(0.7, 1.3), (2.2, 2.8), (4.2, 4.8), (5.5, 7)], 

@@ -4,7 +4,7 @@
 
 This program will estimate the transition matrix according to revision by cohort data, then apply it to samples of population for aligning versions of questionnaire. 
 
-The detail intriduction to this program can refer to this article ...
+The detail introduction to this program can refer to this article ...
 
 ## Environment
 
@@ -31,15 +31,15 @@ Windows 10
 
 ### Code
 
-Code that generate simulation dataset is in the root folder of this repo.
+Code that generate simulation dataset is generate_simul_data.py which is in the root folder of this repo. There is a config.py that can set parameters of the simulation.
 
 ### Pre-generated dataset
 
 Only one simulation datset using parameters that shown in the article is pre-generated in /simul_data/
 
-## Estimation by VAM
+### Execution order and other tips
 
-### Command and execution order
+Please follow the order below to execute these programs.
 
 1. add_randomness_simulation_data_gen.py
     - This code will generate simulation data, and store in the given directory.
@@ -48,15 +48,22 @@ Only one simulation datset using parameters that shown in the article is pre-gen
     - This code will use the generated data to compute the essential matrices and vectors.
     - The essential matricse and vectors are store in the directory /qp_input_output/
 
-3. main_qp.m
+3. Hand craft
+    - Hand craft the ideal revision matrix and put it in /qp_input_output/ and named it Python_G_matrix.csv
+
+4. main_qp.m
     - Use Matlab to solve Quadratic Problem, estimat the revised probability vector and the matrix A.
 
-4. add_randomness_simulation_performance.py
+5. add_randomness_simulation_performance.py
     - Compute the estimated mean of the output of Matlab QP.
     - Prepare data for ploting the result in a figure.
 
-5. add_randomness_simulation_draw_fig.py
+6. add_randomness_simulation_draw_fig.py
     - Draw estimation result in a figure.
+
+## Estimation by VAM
+
+The estimation of matrices and vectors is done by the main_qp.m script. 
 
 ### Input
 
