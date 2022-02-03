@@ -14,10 +14,16 @@ class Config_simul:
         self.main_directory = './simul_data/'
         # frozen distribution (scipy distribution given parameters)
         self.distribution_list = [st.gamma(a=1, scale=3), st.gamma(a=1, scale=2.8), st.gamma(a=1, scale=2.7)]  
+        self.distribution_nm_list = ['gamma', 'gamma', 'gamma']
         self.threshold_list = [
             [1, 2, 3], 
             [1, 2.5, 4.5, 6.5], 
             [1, 2.5, 4.5, 6.5]
+        ]
+        self.midpoint_list = [
+            [0.5, 1.5, 2.5, 3.0], 
+            [0.5, 1.75, 3.5, 5.5, 6.5], 
+            [0.5, 1.75, 3.5, 5.5, 6.5]
         ]
         self.num_of_sample_points_list = [57000, 38000, 35000]
         self.version_of_questionnaire_list = [
