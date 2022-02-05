@@ -17,6 +17,7 @@ Windows 10
 - Numpy
 - Scikit-learn
 - Matplotlib
+- rpy2
 
 ### R
 
@@ -27,17 +28,59 @@ Windows 10
 - R2020a
 - Optimization toolbox version 8.5
 
-## Simulation dataset
+## Usage
+<!-- TODO: 整理成一個bat檔案? -->
+Please follow the execution order below to reproduce the result that we report in the article. 
+
+1. Check parameters in the config.py. 
+
+2. Execute generate_simul_data.py
+
+<!-- TODO: 加入理想改版矩陣的格式(.csv內的格式) -->
+3. Hand craft the ideal revision matrix name it `Python_G_matrix.csv` and put it in `/qp_input_output/`. The format of `Python_G_matrix.csv` please refer to the pre-generated dataset. 
+
+4. Execute main_qp.m 
+
+5. Execute estimation.py
+
+## Simulation code and dataset
 
 ### Code
 
-Code that generate simulation dataset is generate_simul_data.py which is in the root folder of this repo. There is a config.py that can set parameters of the simulation.
+1. config.py
+    - Set simulation parameters here. These parameter will be used by all the other python scripts. 
+
+2. generate_simul_data.py 
+    - Generate simulation dataset. There is a config.py that can set parameters of the simulation.
+    - Output
+        - Multi-year simulation data: `/[main_directory in config.py]/year_[number_of_year].csv`
+
+3. preprocessing_for_qp.py
+    - Compute matrices and vectors for Quadratice Programming. 
+    - Output
+        - Under `/[main_directory in config.py]/matrix_and_vector/`
+            - Population vector in first year: `first_year_population_vec.csv`
+            - Population vector in first year but answering the questionnaire in second year: `first_year_population_second_year_q_vec.csv` 
+        - TODO: 慢慢補上來
+        - Under `/[main_directory in config.py]/qp_input_output/`
+            - Cohort p.v. in the first year: `python_vector_c.csv`
+
+4. main_qp.m
+    - Solve the Quadratice Programming
+    - Output: 
+
+5. estimation.py
+    - 
 
 ### Pre-generated dataset
 
-Only one simulation datset using parameters that shown in the article is pre-generated in /simul_data/
+There is a pre-generated simulation datset using parameters shown in the article in `/simul_data/`
 
-### Execution order and other tips
+### Result of pre-generated dataset and default parameters
+
+TODO: Some figs and tables?
+
+<!-- ### Execution order and other tips
 
 Please follow the order below to execute these programs.
 
@@ -59,11 +102,13 @@ Please follow the order below to execute these programs.
     - Prepare data for ploting the result in a figure.
 
 6. add_randomness_simulation_draw_fig.py
-    - Draw estimation result in a figure.
+    - Draw estimation result in a figure. -->
 
-## Estimation by VAM
+## Details about estimation by VAM(Quadratic programming)
 
+Try to solve $B*A*c=f$ and $\epsilon * \theta_1 + \gamma * \theta_2$
 The estimation of matrices and vectors is done by the main_qp.m script. 
+They are all written in matlab scripts. 
 
 ### Input
 

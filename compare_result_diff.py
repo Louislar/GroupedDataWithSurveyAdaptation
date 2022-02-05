@@ -14,8 +14,8 @@ second_dir = './config_version/simul_data/'
 first_dir = './simulation_data_gen_testing/simul_data/matrix_and_vector/'
 second_dir = './config_version/simul_data/matrix_and_vector/'
 # Data for QP
-# first_dir = './simulation_data_gen_testing/simul_data/qp_input_output/'
-# second_dir = './config_version/simul_data/qp_input_output/'
+first_dir = './simulation_data_gen_testing/simul_data/qp_input_output/'
+second_dir = './config_version/simul_data/qp_input_output/'
 
 # Only check files not directories
 first_files_list = [join(first_dir, f) for f in listdir(first_dir) if isfile(join(first_dir, f))]
@@ -32,11 +32,13 @@ print(second_files_list)
 #     else: 
 #         print('dir: ', join(first_dir, f))
 
-# for _first_file, _second_file in zip(first_files_list, second_files_list): 
-#     print(_first_file, ', ', _second_file)
-#     tmp_first = pd.read_csv(_first_file)
-#     tmp_second = pd.read_csv(_second_file)
-#     print(tmp_first.equals(tmp_second))
+for _first_file, _second_file in zip(first_files_list, second_files_list): 
+    print(_first_file, ', ', _second_file)
+    _first_file = join(first_dir, _first_file)
+    _second_file = join(second_dir, _second_file)
+    tmp_first = pd.read_csv(_first_file)
+    tmp_second = pd.read_csv(_second_file)
+    print(tmp_first.equals(tmp_second))
 
 # for i in range(num_of_year): 
 #     tmp_first = pd.read_csv(first_dir+'year_{0}.csv'.format(i))
