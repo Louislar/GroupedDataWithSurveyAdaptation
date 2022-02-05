@@ -214,14 +214,6 @@ if __name__ == "__main__":
             os.makedirs(path)
             print('-----dir建立成功-----')
     # =======
-    questionnaire_value_1997 = [0.5, 1.5, 2.5, 3.0]
-    questionnaire_value_1998 = [0.5, 1.75, 3.5, 5.5, 6.5]
-    simulation_data_midpoint_list = [
-        questionnaire_value_1997, 
-        questionnaire_value_1998, 
-        questionnaire_value_1998
-    ]
-
     simulation_datta_df_list = read_simulation_data(simulationConfig.main_directory) 
 
     # 1. Gamma fit via MLE(使用單純的gamma fit的結果)
@@ -232,7 +224,7 @@ if __name__ == "__main__":
     
 
     # 2. The midpoint method(使用midpoint的結果) 
-    simple_gamma_result_list = cal_simple_mid_point(simulation_datta_df_list, simulation_data_midpoint_list)
+    simple_gamma_result_list = cal_simple_mid_point(simulation_datta_df_list, simulationConfig.midpoint_list)
     print('(全體)單純midpoint結果', simple_gamma_result_list)
     pd.Series(simple_gamma_result_list).to_csv(simulationConfig.main_directory+'data_for_draw_fig/population_midpoint_mean.csv', index=False)
 
@@ -272,7 +264,7 @@ if __name__ == "__main__":
     # 先將人口向量換成人數比例向量
     estimate_first_yr_population_second_yr_q_vec = estimate_first_yr_population_second_yr_q_vec / np.sum(estimate_first_yr_population_second_yr_q_vec)
     population_matrix_and_midpoint_result_first_yr_mean = \
-        np.dot(estimate_first_yr_population_second_yr_q_vec, questionnaire_value_1998)
+        np.dot(estimate_first_yr_population_second_yr_q_vec, simulationConfig.midpoint_list[1])
     print('全體人口1997年平均 (QP + midpoint): ', population_matrix_and_midpoint_result_first_yr_mean)
 
     # 4.3 Store the estimated mean by QP(儲存全體人口QP預測結果)
@@ -297,10 +289,10 @@ if __name__ == "__main__":
         fourth_yr_corhort_df
     ]
     corhort_data_midpoint_list = [
-        questionnaire_value_1997, 
-        questionnaire_value_1998, 
-        questionnaire_value_1998, 
-        questionnaire_value_1998
+        simulationConfig.midpoint_list[0], 
+        simulationConfig.midpoint_list[1], 
+        simulationConfig.midpoint_list[1], 
+        simulationConfig.midpoint_list[2]
     ]
     corhort_midpoint_result_list = cal_simple_mid_point(corhort_data_df_list, corhort_data_midpoint_list)
     cohort_midpoint_result_sr = pd.Series(corhort_midpoint_result_list)
@@ -308,10 +300,10 @@ if __name__ == "__main__":
 
     # 5.2 Estimation by fitting a gamma via MLE(cohort的gamma fit計算)
     cohort_data_threshold_list = [
-        [1, 2, 3], 
-        [1, 2.5, 4.5, 6.5], 
-        [1, 2.5, 4.5, 6.5], 
-        [1, 2.5, 4.5, 6.5]
+        simulationConfig.threshold_list[0], 
+        simulationConfig.threshold_list[1], 
+        simulationConfig.threshold_list[1], 
+        simulationConfig.threshold_list[2]
     ]
     cohort_data_distribution_nm_list = [
         'gamma', 
@@ -336,12 +328,12 @@ if __name__ == "__main__":
 
     # 5.3 cohort QP + gamma fit
     first_yr_corhort_QP_gamma_result = \
-        distribution_fit_by_sample_arr(estimate_first_year_cohort_second_yr_q_vec, [1, 2.5, 4.5, 6.5], cohort_data_distribution_nm_list[0])
+        distribution_fit_by_sample_arr(estimate_first_year_cohort_second_yr_q_vec, simulationConfig.threshold_list[1], cohort_data_distribution_nm_list[0])
     first_yr_corhort_QP_gamma_result = first_yr_corhort_QP_gamma_result[0] * first_yr_corhort_QP_gamma_result[1]
 
     # 5.4 cohort QP + midpoint 
     first_yr_corhort_QP_midpoint_result = \
-        np.dot(estimate_first_year_cohort_second_yr_q_vec_percent, questionnaire_value_1998)
+        np.dot(estimate_first_year_cohort_second_yr_q_vec_percent, simulationConfig.midpoint_list[1])
 
     cohort_qp_mean = pd.Series([first_yr_corhort_QP_midpoint_result, first_yr_corhort_QP_gamma_result])
     cohort_qp_mean.to_csv(simulationConfig.main_directory+'data_for_draw_fig/cohort_qp_mean.csv', index=False)

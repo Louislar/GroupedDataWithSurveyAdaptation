@@ -14,8 +14,8 @@ second_dir = './config_version/simul_data/'
 first_dir = './simulation_data_gen_testing/simul_data/matrix_and_vector/'
 second_dir = './config_version/simul_data/matrix_and_vector/'
 # Data for QP
-first_dir = './simulation_data_gen_testing/simul_data/qp_input_output/'
-second_dir = './config_version/simul_data/qp_input_output/'
+# first_dir = './simulation_data_gen_testing/simul_data/qp_input_output/'
+# second_dir = './config_version/simul_data/qp_input_output/'
 
 # Only check files not directories
 first_files_list = [join(first_dir, f) for f in listdir(first_dir) if isfile(join(first_dir, f))]
