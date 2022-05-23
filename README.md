@@ -1,5 +1,8 @@
 # GroupedDataWithSurveyAdaptation
 
+[![hackmd-github-sync-badge](https://hackmd.io/deR1Z80sTfee2bE8WDjZ5Q/badge)](https://hackmd.io/deR1Z80sTfee2bE8WDjZ5Q)
+
+
 ## Overview
 
 This program will estimate the transition matrix according to revision by cohort data, then apply it to samples of population for aligning versions of questionnaire. 
