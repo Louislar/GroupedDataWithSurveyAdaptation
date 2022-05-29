@@ -1,0 +1,13 @@
+File name,Description
+first_year_population_vec.csv,Population vector in first year
+first_year_population_second_year_q_vec.csv,Population in first year but answering the questionnaire that is originally used in second year
+first_cohort_second_year_q_vec.csv,Cohort in first year but answering the questionnaire that is originally used in second year
+second_year_population_vec.csv,Population vector in second year
+third_year_population_vec.csv,Population vector in third year(Not in use)
+first_cohort_habbit_matrix.csv,"The time-related matrix of cohort in first year, which is the same as the transition matrix in the MJ dataset between 1998 and 1999"
+first_pop_ver_change_matrix.csv,The revision-related matrix of population in first year
+first_cohort_ver_change_matrix.csv,The revision-related matrix of cohort in first year
+first_yr_first_cohort_vec.csv,"Frequency vector of the first cohort in the first year. Same as the /qp_input_output/python_c_vec.csv, which is the form of relative frequency. "
+second_yr_first_cohort_vec.csv,"Frequency vector of the first cohort in the second year. Same as the /qp_input_output/python_f_vec.csv, which is the form of relative frequency. "
+second_yr_second_cohort_vec.csv,Frequency vector of the second cohort in the second year. (Not in use)
+third_yr_first_cohort_vec.csv,Frequency vector of the second cohort in the third year. (Not in use)
