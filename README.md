@@ -95,10 +95,10 @@ Please note that the R code is integrate in the python code, so there is no need
     - Output(All under `/[main_directory in config.py]/data_for_draw_fig/`):
         - Mean estimation of cohort by gamma fit via MLE: `cohort_gamma_fit_mean.csv`
         - Mean estimation of cohort by the midpoint method: `cohort_midpoint_mean.csv`
-        - Mean estimation of cohort by VAM with gamma fit via MLE or the midpoint method: `cohort_qp_mean.csv`
+        - Mean estimation of the first cohort by VAM with gamma fit via MLE or the midpoint method: `cohort_qp_mean.csv`
         - Mean estimation of population by gamma fit via MLE: `population_gamma_fit_mean.csv`
         - Mean estimation of population by the midpoint method: `population_midpoint_mean.csv`
-        - Mean estimation of cohort by VAM with gamma fit via MLE or the midpoint method: `population_qp_mean.csv`
+        - Mean estimation of population by VAM with gamma fit via MLE or the midpoint method: `population_qp_mean.csv`
 
 6. estimation_error.py
     - Compute the estimation error of Gamma fit, midpoint method, QP(with midpoint method) and QP(with Gamma fit)
