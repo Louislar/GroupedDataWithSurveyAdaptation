@@ -79,7 +79,7 @@ Please note that the R code is integrate in the python code, so there is no need
             - Cohort p.v. in the first year: `python_vector_c.csv`
             - Cohort p.v. in the second year: `python_f_vec.csv`
             - Transition matrix of cohort at first year: `python_T_matrix.csv`
-            - Time-related matrix of cohort at first year: `python_M_matrix.csv`
+            - Time-related matrix of cohort at second year: `python_M_matrix.csv`
 
 4. main_qp.m(In `config_version/matlab_qp/`)
     - Solve the Quadratice Programming problem
