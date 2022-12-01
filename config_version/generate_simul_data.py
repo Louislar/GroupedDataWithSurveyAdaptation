@@ -282,19 +282,23 @@ if __name__ == "__main__":
 
     ## random transition matrix index {1, 2, 3}
     rndTransMatInd = 3
+    rndTransMatCount = 3
     ## Change output path
     simulationConfig.main_directory='./simul_data_{0}/'.format(rndTransMatInd)
     ## read random generate transition matrices
     rndGenTransMat = pd.read_csv(
         'randomTransitionMatrices/random_transition_matrix_{0}.csv'.format(rndTransMatInd-1)
     ).values
+    rndGenTransMatNext = pd.read_csv(
+        'randomTransitionMatrices/random_transition_matrix_{0}.csv'.format(rndTransMatInd%rndTransMatCount)
+    ).values
     print('The random gen trans mat: ')
     print(rndGenTransMat)
     
     ## Change transition matrix used in simulation to those randomly generated
-    ## Change the second transition matrix to identity matrix for convenience 
+    ## Change the second transition matrix to another random generate matrix for convenience 
     simulationConfig.cohort_habbit_matrix_list[0] = rndGenTransMat
-    simulationConfig.cohort_habbit_matrix_list[1] = np.identity(rndGenTransMat.shape[0])
+    simulationConfig.cohort_habbit_matrix_list[1] = rndGenTransMatNext
     print(simulationConfig.cohort_habbit_matrix_list)
     
 
