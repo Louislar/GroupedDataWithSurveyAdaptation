@@ -200,8 +200,163 @@ def make_population_vec_integer(population_vec: np.array, number_of_population: 
 
     return round_arr 
 
+# Original simulation 
+if __name__ == "__main01__":
+    simulationConfig = Config_simul()
+    # 建立資料夾
+    paths = [
+        simulationConfig.main_directory + 'data_for_draw_fig'
+    ]
+    for path in paths: 
+        folder = os.path.exists(path)
+        #判斷結果
+        if not folder:
+            #如果不存在，則建立新目錄
+            os.makedirs(path)
+            print('-----dir建立成功-----')
+    # =======
+    simulation_datta_df_list = read_simulation_data(simulationConfig.main_directory) 
+
+    # 1. Gamma fit via MLE(使用單純的gamma fit的結果)
+    simple_gamma_result_list = use_simple_gamma_fit(simulation_datta_df_list, simulationConfig.threshold_list, simulationConfig.distribution_nm_list)
+    simple_gamma_result_list = [param_list[0] * param_list[1] for param_list in simple_gamma_result_list]
+    print('(全體)單純gamma fit結果', simple_gamma_result_list)
+    pd.Series(simple_gamma_result_list).to_csv(simulationConfig.main_directory+'data_for_draw_fig/population_gamma_fit_mean.csv', index=False)
+    
+
+    # 2. The midpoint method(使用midpoint的結果) 
+    simple_gamma_result_list = cal_simple_mid_point(simulation_datta_df_list, simulationConfig.midpoint_list)
+    print('(全體)單純midpoint結果', simple_gamma_result_list)
+    pd.Series(simple_gamma_result_list).to_csv(simulationConfig.main_directory+'data_for_draw_fig/population_midpoint_mean.csv', index=False)
+
+    # 3. Read matlab QP estimation(讀取matlab QP預測的結果) 
+    qp_result_list = load_matlab_QP_estimate_result(simulationConfig.main_directory+'qp_input_output/')
+    estimate_first_year_cohort_ver_change_matrix = qp_result_list[0]
+    estimate_first_year_cohort_habbit_matrix = qp_result_list[1].values
+    estimate_first_year_cohort_second_yr_q_vec_percent = qp_result_list[2].values[:, 0]
+    print('估計的第一年cohort人口的習慣矩陣: \n', estimate_first_year_cohort_habbit_matrix)
+    print('估計的第一年cohort人口填寫第二年問卷向量: \n', estimate_first_year_cohort_second_yr_q_vec_percent)
+
+    # 3.1 Use matlab QP estimation to estimate population samples' vector in first year(使用matlab QP預測結果做計算)
+    # 3.1.1 計算估計的全體第一年人口填寫第二年問卷結果
+    first_year_population_vec = pd.read_csv(simulationConfig.main_directory+'matrix_and_vector/first_year_population_vec.csv')
+    estimate_first_yr_population_second_yr_q_vec = \
+        np.dot(estimate_first_year_cohort_ver_change_matrix.values, first_year_population_vec.values)[:, 0]
+    print(estimate_first_year_cohort_ver_change_matrix)
+    print(first_year_population_vec)
+    print(first_year_population_vec.sum())
+    print('估計的第一年總體人口填寫第二年問卷: \n', estimate_first_yr_population_second_yr_q_vec)
+    print(sum(estimate_first_yr_population_second_yr_q_vec))
+
+    # 3.1.2 Round vector to decimal(將人數向量去除小數的部分)
+    # 預測的第一年總體人口填寫第二年問卷, 人數向量
+    estimate_first_yr_population_second_yr_q_vec = \
+        make_population_vec_integer(estimate_first_yr_population_second_yr_q_vec, first_year_population_vec.values.astype(int).sum())
+    print(estimate_first_yr_population_second_yr_q_vec)
+    print(sum(estimate_first_yr_population_second_yr_q_vec))
+    pd.Series(estimate_first_yr_population_second_yr_q_vec).to_csv(simulationConfig.main_directory+'matrix_and_vector/estimate_first_yr_population_second_yr_q_vec.csv', index=False)
+
+    # 4.1 QP matrix + gamma fit 的結果
+    best_fit_param = distribution_fit_by_sample_arr(estimate_first_yr_population_second_yr_q_vec, simulationConfig.threshold_list[1], simulationConfig.distribution_nm_list[0])
+    population_matrix_and_gamma_fit_result_first_yr_mean = best_fit_param[0] * best_fit_param[1]
+    print('全體人口1997年平均 (QP + {0} fit): '.format(simulationConfig.distribution_nm_list[0]), population_matrix_and_gamma_fit_result_first_yr_mean)
+    
+    # 4.2 使用QP matrix + midpoint的結果
+    # 先將人口向量換成人數比例向量
+    estimate_first_yr_population_second_yr_q_vec = estimate_first_yr_population_second_yr_q_vec / np.sum(estimate_first_yr_population_second_yr_q_vec)
+    population_matrix_and_midpoint_result_first_yr_mean = \
+        np.dot(estimate_first_yr_population_second_yr_q_vec, simulationConfig.midpoint_list[1])
+    print('全體人口1997年平均 (QP + midpoint): ', population_matrix_and_midpoint_result_first_yr_mean)
+
+    # 4.3 Store the estimated mean by QP(儲存全體人口QP預測結果)
+    estimate_first_year_population_mean_sr = \
+        pd.Series([population_matrix_and_midpoint_result_first_yr_mean, population_matrix_and_gamma_fit_result_first_yr_mean])
+    estimate_first_year_population_mean_sr.to_csv(simulationConfig.main_directory+'data_for_draw_fig/population_qp_mean.csv', index=False)
+
+    # ======= ======= ======= ======= ======= ======= =======
+    # 5. Cohort estimation(輸出corhort資料的預測結果) (預測的年平均)
+    # 5.1 Estimation by Midpoint(corhort的midpoint計算)
+    first_corhort_df = pd.merge(simulation_datta_df_list[0], simulation_datta_df_list[1], how='inner', on=['id'])
+    first_yr_corhort_df = first_corhort_df[['id', 'final_q_result_x']].rename(columns={'final_q_result_x': 'final_q_result'})
+    second_yr_corhort_df = first_corhort_df[['id', 'final_q_result_y']].rename(columns={'final_q_result_y': 'final_q_result'})
+    second_corhort_df = pd.merge(simulation_datta_df_list[1], simulation_datta_df_list[2], how='inner', on=['id'])
+    third_yr_corhort_df = second_corhort_df[['id', 'final_q_result_x']].rename(columns={'final_q_result_x': 'final_q_result'})
+    fourth_yr_corhort_df = second_corhort_df[['id', 'final_q_result_y']].rename(columns={'final_q_result_y': 'final_q_result'})
+
+    corhort_data_df_list = [
+        first_yr_corhort_df, 
+        second_yr_corhort_df, 
+        third_yr_corhort_df, 
+        fourth_yr_corhort_df
+    ]
+    corhort_data_midpoint_list = [
+        simulationConfig.midpoint_list[0], 
+        simulationConfig.midpoint_list[1], 
+        simulationConfig.midpoint_list[1], 
+        simulationConfig.midpoint_list[2]
+    ]
+    corhort_midpoint_result_list = cal_simple_mid_point(corhort_data_df_list, corhort_data_midpoint_list)
+    cohort_midpoint_result_sr = pd.Series(corhort_midpoint_result_list)
+    cohort_midpoint_result_sr.to_csv(simulationConfig.main_directory+'data_for_draw_fig/cohort_midpoint_mean.csv', index=False)
+
+    # 5.2 Estimation by fitting a gamma via MLE(cohort的gamma fit計算)
+    cohort_data_threshold_list = [
+        simulationConfig.threshold_list[0], 
+        simulationConfig.threshold_list[1], 
+        simulationConfig.threshold_list[1], 
+        simulationConfig.threshold_list[2]
+    ]
+    cohort_data_distribution_nm_list = [
+        'gamma', 
+        'gamma', 
+        'gamma', 
+        'gamma'
+    ]
+    first_second_third_cohort_gamma_result_list = use_simple_gamma_fit(corhort_data_df_list, cohort_data_threshold_list, cohort_data_distribution_nm_list)
+    first_second_third_cohort_gamma_result_list = [a_set_param[0]*a_set_param[1] for a_set_param in first_second_third_cohort_gamma_result_list]
+    cohort_gamma_fit_result_sr = pd.Series(first_second_third_cohort_gamma_result_list)
+    cohort_gamma_fit_result_sr.to_csv(simulationConfig.main_directory+'data_for_draw_fig/cohort_gamma_fit_mean.csv', index=False)
+    
+
+    # 比例向量轉人數向量
+    # 計算估計的第一年cohort人口填寫第二年問卷結果 (人數向量)
+    print(estimate_first_year_cohort_second_yr_q_vec_percent)
+    estimate_first_year_cohort_second_yr_q_vec = \
+        estimate_first_year_cohort_second_yr_q_vec_percent * first_yr_corhort_df.shape[0]
+    estimate_first_year_cohort_second_yr_q_vec = \
+        make_population_vec_integer(estimate_first_year_cohort_second_yr_q_vec, first_yr_corhort_df.shape[0])
+    print(estimate_first_year_cohort_second_yr_q_vec)
+
+    # 5.3 cohort QP + gamma fit
+    first_yr_corhort_QP_gamma_result = \
+        distribution_fit_by_sample_arr(estimate_first_year_cohort_second_yr_q_vec, simulationConfig.threshold_list[1], cohort_data_distribution_nm_list[0])
+    first_yr_corhort_QP_gamma_result = first_yr_corhort_QP_gamma_result[0] * first_yr_corhort_QP_gamma_result[1]
+
+    # 5.4 cohort QP + midpoint 
+    first_yr_corhort_QP_midpoint_result = \
+        np.dot(estimate_first_year_cohort_second_yr_q_vec_percent, simulationConfig.midpoint_list[1])
+
+    cohort_qp_mean = pd.Series([first_yr_corhort_QP_midpoint_result, first_yr_corhort_QP_gamma_result])
+    cohort_qp_mean.to_csv(simulationConfig.main_directory+'data_for_draw_fig/cohort_qp_mean.csv', index=False)
+
+# Simulation with random 
 if __name__ == "__main__":
     simulationConfig = Config_simul()
+    
+    # 改變data儲存的位置
+    ## random transition matrix index {1, 2, 3}
+    rndTransMatInd = 3
+    rndTransMatCount = 3
+    ## Change output path
+    simulationConfig.main_directory='./simul_data_{0}/'.format(rndTransMatInd)
+    ## read random generate transition matrices
+    rndGenTransMat = pd.read_csv(
+        'randomTransitionMatrices/random_transition_matrix_{0}.csv'.format(rndTransMatInd-1)
+    ).values
+    rndGenTransMatNext = pd.read_csv(
+        'randomTransitionMatrices/random_transition_matrix_{0}.csv'.format(rndTransMatInd%rndTransMatCount)
+    ).values
+
     # 建立資料夾
     paths = [
         simulationConfig.main_directory + 'data_for_draw_fig'
