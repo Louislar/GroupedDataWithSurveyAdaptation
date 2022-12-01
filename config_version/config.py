@@ -67,6 +67,8 @@ class Config_simul:
                 [0.015589974, 0.030869972, 0.070875179, 0.203683036, 0.506357103]
             ])
         ]
+        ## The MJ cohort p.v. was not used in simulation process 
+        ## 利用vs code的find references沒有找到其他使用到這個參數的地方 
         self.cohort_first_yr_vec = [
             # Cohort probability vector in 1998 MJ dataset (美兆真實資料的98年(起始年)重複健檢的人口比例)
             np.array([0.455305215, 0.231366991, 0.148282098, 0.079712624, 0.085333073]), 

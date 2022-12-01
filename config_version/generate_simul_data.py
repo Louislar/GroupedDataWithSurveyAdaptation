@@ -245,7 +245,8 @@ def random_pick_cohort_data_and_give_id(sample_df_list, cohort_size, habbit_matr
 
     return sample_df_list
 
-if __name__ == "__main__":
+# Original simulation
+if __name__ == "__main01__":
     simulationConfig = Config_simul()
     sample_point_df_list = multi_origin_samples_generate(simulationConfig.distribution_list, simulationConfig.num_of_sample_points_list)
     sample_point_df_list = multi_origin_samples_fill_questionnaire(sample_point_df_list, simulationConfig.version_of_questionnaire_list)
@@ -273,3 +274,52 @@ if __name__ == "__main__":
     for i in range(len(sample_point_df_list)): 
         sample_point_df_list[i].to_csv(simulationConfig.main_directory+'year_{0}.csv'.format(i), index=False)
         
+
+# Simulation with random generate transition matrices
+# Output directory simul_data_random_{index of the random transition matrix}/
+if __name__ == "__main__":
+    simulationConfig = Config_simul()
+
+    ## random transition matrix index {1, 2, 3}
+    rndTransMatInd = 3
+    ## Change output path
+    simulationConfig.main_directory='./simul_data_{0}/'.format(rndTransMatInd)
+    ## read random generate transition matrices
+    rndGenTransMat = pd.read_csv(
+        'randomTransitionMatrices/random_transition_matrix_{0}.csv'.format(rndTransMatInd-1)
+    ).values
+    print('The random gen trans mat: ')
+    print(rndGenTransMat)
+    
+    ## Change transition matrix used in simulation to those randomly generated
+    ## Change the second transition matrix to identity matrix for convenience 
+    simulationConfig.cohort_habbit_matrix_list[0] = rndGenTransMat
+    simulationConfig.cohort_habbit_matrix_list[1] = np.identity(rndGenTransMat.shape[0])
+    print(simulationConfig.cohort_habbit_matrix_list)
+    
+
+    sample_point_df_list = multi_origin_samples_generate(simulationConfig.distribution_list, simulationConfig.num_of_sample_points_list)
+    sample_point_df_list = multi_origin_samples_fill_questionnaire(sample_point_df_list, simulationConfig.version_of_questionnaire_list)
+    sample_point_df_list = multi_origin_samples_random_change_choice(sample_point_df_list, simulationConfig.threshold_bias_bound_list_list, simulationConfig.threshold_bias_pdf_list_list, simulationConfig.threshold_list)
+    
+    # 設定ID (從0開始一直+1上去)
+    sample_point_df_list = set_ID(sample_point_df_list)
+
+    # 隨機挑選cohort人口，並且給定ID
+    sample_point_df_list[0:2] = \
+        random_pick_cohort_data_and_give_id(
+            sample_point_df_list[0:2], 
+            simulationConfig.cohort_sample_size_list[0], 
+            simulationConfig.cohort_habbit_matrix_list[0], 
+            simulationConfig.version_of_questionnaire_list[1]
+        )
+    sample_point_df_list[1:3] = \
+        random_pick_cohort_data_and_give_id(
+            sample_point_df_list[1:3], 
+            simulationConfig.cohort_sample_size_list[1], 
+            simulationConfig.cohort_habbit_matrix_list[1], 
+            simulationConfig.version_of_questionnaire_list[2]
+        )
+
+    for i in range(len(sample_point_df_list)): 
+        sample_point_df_list[i].to_csv(simulationConfig.main_directory+'year_{0}.csv'.format(i), index=False)

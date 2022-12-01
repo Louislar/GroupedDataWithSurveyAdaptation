@@ -218,8 +218,71 @@ def QP_matrix_param_calculate(datta_df_list, main_directory):
 
     return first_yr_cohort_vec_number_sr, second_yr_cohort_vec_number_sr, first_total_transition_matrix, second_habbit_transition_matrix
 
+# Original simulation process 
+if __name__ == "__main01__": 
+    simulationConfig = Config_simul()
+    simulation_data_threshold_list = simulationConfig.threshold_list
+    simulation_datta_df_list = read_simulation_data(simulationConfig.main_directory) 
+
+    # Create directory(建立資料夾)
+    paths = [
+        simulationConfig.main_directory + 'matrix_and_vector', 
+        simulationConfig.main_directory + 'qp_input_output'
+    ]
+    for path in paths: 
+        folder = os.path.exists(path)
+        #判斷結果
+        if not folder:
+            #如果不存在，則建立新目錄
+            os.makedirs(path)
+            print('-----dir建立成功-----')
+
+    # ======= ======= ======= ======= ======= ======= =======
+    # 1. simulation資訊抽取
+    first_year_population_vec, second_year_population_vec, third_year_population_vec, \
+        first_yr_first_cohort_vec, second_yr_first_cohort_vec, second_yr_second_cohort_vec, third_yr_first_cohort_vec, \
+        first_year_population_second_year_q_vec, first_cohort_second_year_q_vec, \
+        first_cohort_habbit_matrix, \
+        first_pop_ver_change_matrix, first_cohort_ver_change_matrix = \
+            simulation_data_info_retrieve(simulation_datta_df_list)
+    # 1.1 儲存成csv檔案
+    first_year_population_vec.to_csv(simulationConfig.main_directory + 'matrix_and_vector/first_year_population_vec.csv', index=False)
+    first_year_population_second_year_q_vec.to_csv(simulationConfig.main_directory + 'matrix_and_vector/first_year_population_second_year_q_vec.csv', index=False)
+    first_cohort_second_year_q_vec.to_csv(simulationConfig.main_directory + 'matrix_and_vector/first_cohort_second_year_q_vec.csv', index=False)
+    second_year_population_vec.to_csv(simulationConfig.main_directory + 'matrix_and_vector/second_year_population_vec.csv', index=False)
+    third_year_population_vec.to_csv(simulationConfig.main_directory + 'matrix_and_vector/third_year_population_vec.csv', index=False)
+    first_cohort_habbit_matrix.to_csv(simulationConfig.main_directory + 'matrix_and_vector/first_cohort_habbit_matrix.csv', index=False)
+    first_pop_ver_change_matrix.to_csv(simulationConfig.main_directory + 'matrix_and_vector/first_pop_ver_change_matrix.csv', index=False)
+    first_cohort_ver_change_matrix.to_csv(simulationConfig.main_directory + 'matrix_and_vector/first_cohort_ver_change_matrix.csv', index=False)
+    first_yr_first_cohort_vec.to_csv(simulationConfig.main_directory + 'matrix_and_vector/first_yr_first_cohort_vec.csv', index=False)
+    second_yr_first_cohort_vec.to_csv(simulationConfig.main_directory + 'matrix_and_vector/second_yr_first_cohort_vec.csv', index=False)
+    second_yr_second_cohort_vec.to_csv(simulationConfig.main_directory + 'matrix_and_vector/second_yr_second_cohort_vec.csv', index=False)
+    third_yr_first_cohort_vec.to_csv(simulationConfig.main_directory + 'matrix_and_vector/third_yr_first_cohort_vec.csv', index=False)
+
+
+
+    # ======= ======= ======= ======= ======= ======= =======
+    # 2. QP使用參數準備
+    first_yr_cohort_vec, second_yr_cohort_vec, first_total_transition_matrix, second_habbit_transition_matrix = \
+        QP_matrix_param_calculate(simulation_datta_df_list, simulationConfig.main_directory)
+    print('第一年的cohort向量: \n', first_yr_cohort_vec)
+
+    # 2.1 存成csv檔案
+    first_yr_cohort_vec.to_csv(simulationConfig.main_directory + '/matrix_and_vector/first_yr_cohort_vec.csv', index=False)
+    second_yr_cohort_vec.to_csv(simulationConfig.main_directory + '/matrix_and_vector/second_yr_cohort_vec.csv', index=False)
+    first_total_transition_matrix.to_csv(simulationConfig.main_directory + '/matrix_and_vector/first_total_transition_matrix.csv', index=False)
+    second_habbit_transition_matrix.to_csv(simulationConfig.main_directory + '/matrix_and_vector/second_habbit_transition_matrix.csv', index=False)
+
+# Simulation with random transition matrices 
 if __name__ == "__main__": 
     simulationConfig = Config_simul()
+
+    # 改變data儲存的位置
+    ## random transition matrix index {1, 2, 3}
+    rndTransMatInd = 3
+    ## Change output path
+    simulationConfig.main_directory='./simul_data_{0}/'.format(rndTransMatInd)
+
     simulation_data_threshold_list = simulationConfig.threshold_list
     simulation_datta_df_list = read_simulation_data(simulationConfig.main_directory) 
 
