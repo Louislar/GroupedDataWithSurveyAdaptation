@@ -90,8 +90,65 @@ def max_absolute_difference_between_vector(a_vector, b_vector):
     max_absolute_difference = np.amax(a_minus_b_abs)
     return max_absolute_difference
 
+# Original simulation
+if __name__=='__main01__':
+    simulationConfig = Config_simul()
+    # TODO: create directory for estimation error
+    # TODO: 將directory的指定方式，命名方式，也加入config當中
+    # read estimation results
+    estimations = read_estimation_results(simulationConfig.main_directory)
+    # read true values
+    true_values = read_true_values(simulationConfig.main_directory, simulationConfig)
+    # compute difference between estimation and true values
+    ## mean of cohort
+    error_cohort_gammafit_mean = abs(estimations[0] - true_values[2])
+    error_cohort_midpoint_mean = abs(estimations[1] - true_values[2])
+    error_cohort_qp_midpoint_mean = abs(estimations[2] - true_values[2])
+    error_cohort_qp_gammafit_mean = abs(estimations[3] - true_values[2])
+    ## mean of population
+    error_pop_gammafit_mean = abs(estimations[4] - true_values[0])
+    error_pop_midpoint_mean = abs(estimations[5] - true_values[0])
+    error_pop_qp_midpoint_mean = abs(estimations[6] - true_values[0])
+    error_pop_qp_gammafit_mean = abs(estimations[7] - true_values[0])
+
+    ## probability vector
+    linf_cohort_vec = max_absolute_difference_between_vector(true_values[3], estimations[8])
+    kl_cohort_vec = KL_divergence_between_vector(true_values[3], estimations[8])
+    linf_pop_vec = max_absolute_difference_between_vector(true_values[4], estimations[9])
+    kl_pop_vec = KL_divergence_between_vector(true_values[4], estimations[9])
+
+    output_df = pd.DataFrame({
+        'error_cohort_gammafit_mean': error_cohort_gammafit_mean, 
+        'error_cohort_midpoint_mean': error_cohort_midpoint_mean, 
+        'error_cohort_qp_midpoint_mean': error_cohort_qp_midpoint_mean,
+        'error_cohort_qp_gammafit_mean': error_cohort_qp_gammafit_mean, 
+        'error_pop_gammafit_mean': error_pop_gammafit_mean, 
+        'error_pop_midpoint_mean': error_pop_midpoint_mean, 
+        'error_pop_qp_midpoint_mean': error_pop_qp_midpoint_mean, 
+        'error_pop_qp_gammafit_mean': error_pop_qp_gammafit_mean, 
+        'linf_cohort_vec': linf_cohort_vec, 
+        'kl_cohort_vec': kl_cohort_vec, 
+        'linf_pop_vec': linf_pop_vec, 
+        'kl_pop_vec': kl_pop_vec
+    }, index=['value'])
+    output_df.to_csv(simulationConfig.main_directory+'estimation_error.csv')
+
+# Simulation with randomly generate transition matrix 
 if __name__=='__main__':
     simulationConfig = Config_simul()
+    ## random transition matrix index {1, 2, 3}
+    rndTransMatInd = 3
+    rndTransMatCount = 3
+    ## Change output path
+    simulationConfig.main_directory='./simul_data_{0}/'.format(rndTransMatInd)
+    ## read random generate transition matrices
+    rndGenTransMat = pd.read_csv(
+        'randomTransitionMatrices/random_transition_matrix_{0}.csv'.format(rndTransMatInd-1)
+    ).values
+    rndGenTransMatNext = pd.read_csv(
+        'randomTransitionMatrices/random_transition_matrix_{0}.csv'.format(rndTransMatInd%rndTransMatCount)
+    ).values
+
     # TODO: create directory for estimation error
     # TODO: 將directory的指定方式，命名方式，也加入config當中
     # read estimation results
