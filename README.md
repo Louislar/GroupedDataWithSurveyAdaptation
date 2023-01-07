@@ -1,6 +1,6 @@
 # GroupedDataWithSurveyRevision
 
-This repository is still under construnction. The experiment was completed and the materials were read to be access. But description in this readme is under construction. 
+This repository is still under construnction. The experiment was completed and the materials were ready to be access. But description in this readme is under construction. 
 
 [![hackmd-github-sync-badge](https://hackmd.io/deR1Z80sTfee2bE8WDjZ5Q/badge)](https://hackmd.io/deR1Z80sTfee2bE8WDjZ5Q)
 
