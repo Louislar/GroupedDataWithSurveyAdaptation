@@ -268,7 +268,8 @@ Note that there are three individual simulation data, thus a complete process of
 
 ### Dataset
 <!-- 可能需要給美兆的逐年transition matrix資料 -->
-我們會使用mj的transition matrix做為參考, 藉此產生隨機的transition matrix. 而這些1998~2007年的mj transition matrices儲存在`config_version/randomTransitionMatrices/mj_data/`當中. 
+The transition matrices in MJ dataset in used for generating new random transition matrices. Those transition matrices related to MJ dataset between 1998 and 2007 are stored in `config_version/randomTransitionMatrices/mj_data/`.
+<!-- 我們會使用mj的transition matrix做為參考, 藉此產生隨機的transition matrix. 而這些1998~2007年的mj transition matrices儲存在`config_version/randomTransitionMatrices/mj_data/`當中. -->
 
 #### Pre-generated dataset
 <!-- 預先產生的資料集 -->
