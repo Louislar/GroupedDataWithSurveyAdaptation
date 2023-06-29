@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 np.random.seed(0)
 
-mjTransMatPath = '../mj_gamma_study/multi_year_patient_data/'
+mjTransMatPath = './mj_data/'
 transMatYears = [i for i in range(1998, 2007+1)]
 transMatFilePrefix = 'real_transition_matrix_{0}_{1}.csv'
 outputPath = './'
@@ -133,7 +133,7 @@ def generateRandomTransMat():
     return randomTransMat
 
 if __name__=='__main__':
-    ## TODO: randomly generate 3 transition matrices and store into .csv
+    ## randomly generate 3 transition matrices and store into .csv
     numOfRandomTransMat = 3
     for i in range(numOfRandomTransMat):
         _transMat = generateRandomTransMat()
