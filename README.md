@@ -158,18 +158,27 @@ There is a pre-generated simulation datset in `config_version/simul_data/`, whic
 
 ## Details about estimation by VAM(Quadratic programming)
 Try to solve the optimization problem below. 
-$$
-min\ \gamma \theta_1 + \epsilon \theta_2 + \beta \theta_3 + \alpha \theta_4
-$$
+$$min\ \gamma \theta_1 + \epsilon \theta_2 + \beta \theta_3 + \alpha \theta_4$$
 subject to
-$$
-\sum^{n}_{k=1}(B)_{kj}=1,\forall j=1,...,m \\
+```math
+\sum^{n}_{k=1}(B)_{kj}=1,\forall j=1,...,m
+```
+```math
 \sum^{n}_{k=1}(A)_{kj}=1, \forall j=1,...,m\\
+```
+```math
 |B_1*A_1-T_1|_\infty<\gamma\\
+```
+```math
 |B_1*A_1*U_1-V'_1|_\infty<\epsilon\\
+```
+```math
 |B_1-B_2|_\infty<\beta\\
+```
+```math
 |A_1-G_1|_\infty<\alpha
-$$
+```
+
 The estimation of matrices and vectors is done by the main_qp.m script. 
 They are all matlab scripts. 
 
